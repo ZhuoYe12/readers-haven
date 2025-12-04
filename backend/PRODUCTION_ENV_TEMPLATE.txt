@@ -1,0 +1,55 @@
+# ========================================
+# PRODUCTION .env FILE CONTENT
+# ========================================
+# Copy everything below this line to your backend\.env file
+# ========================================
+
+# ===== Server Configuration =====
+NODE_ENV=production
+PORT=5000
+CLIENT_URL=https://your-frontend-url.vercel.app
+
+# ===== Database Configuration =====
+# ⚠️ GET THESE VALUES FROM RAILWAY AFTER DEPLOYMENT
+# Railway Dashboard → Your MySQL → Connect → Connection Details
+
+DB_HOST=containers-us-west-123.railway.app
+DB_PORT=6457
+DB_NAME=railway
+DB_USER=root
+DB_PASSWORD=your-railway-password-here
+
+# ===== JWT Configuration =====
+# ✅ Already generated - SECURE & READY TO USE!
+JWT_SECRET=07211786007a9d482be268325a44ae93c4a6126fa02d1807eb17e938688f2b356605aa06cc1fced4ce3670b8a3c1ce7b55c30544df67427d124ad8bbf6a05f41
+JWT_EXPIRE=30d
+
+# ========================================
+# 📋 STEP-BY-STEP INSTRUCTIONS:
+# ========================================
+
+# Step 1: Copy everything from line 8 to line 24 (the env variables)
+
+# Step 2: Open backend\.env in Notepad or VS Code
+
+# Step 3: Paste the content and save
+
+# Step 4: After Railway setup, update these:
+#   - DB_HOST (from Railway connection details)
+#   - DB_PORT (from Railway connection details)
+#   - DB_NAME (usually "railway")
+#   - DB_USER (usually "root")
+#   - DB_PASSWORD (from Railway connection details)
+
+# Step 5: After Vercel deployment, update:
+#   - CLIENT_URL (your Vercel frontend URL)
+
+# ========================================
+# 🔐 SECURITY NOTES:
+# ========================================
+# - NEVER commit .env to Git (already in .gitignore)
+# - NEVER share your .env file publicly
+# - JWT_SECRET is already secure and random
+# - Change DB_PASSWORD to your Railway password
+# ========================================
+

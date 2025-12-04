@@ -1,0 +1,2623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Readers Haven – AI Librarian</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fafafa;
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      padding: 60px 20px 40px;
+      margin-bottom: 50px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin: 0 0 10px 0;
+      color: #111;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      margin: 10px 0;
+      color: #666;
+      font-weight: 300;
+    }
+
+    .librarian-intro {
+      background: #fff;
+      border-left: 3px solid #111;
+      padding: 25px 30px;
+      margin: 40px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .librarian-intro h2 {
+      margin-top: 0;
+      color: #111;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+    }
+
+    .librarian-intro p {
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .genres-section {
+      margin: 50px 0;
+    }
+
+    .genres-section h2 {
+      font-size: 1.8rem;
+      color: #111;
+      margin-bottom: 25px;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+    }
+
+    .genres-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 40px;
+    }
+
+    .genre-card {
+      background: #fff;
+      padding: 25px 20px;
+      border-radius: 8px;
+      border: 1px solid #e5e5e5;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .genre-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border-color: #111;
+    }
+
+    .genre-card .emoji {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+      display: block;
+      opacity: 0.9;
+    }
+
+    .genre-card h3 {
+      margin: 10px 0 5px 0;
+      color: #111;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .genre-card p {
+      font-size: 0.85rem;
+      color: #666;
+      margin: 0;
+      font-weight: 300;
+    }
+
+    .collections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .collection-card {
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      border: 1px solid #e5e5e5;
+    }
+
+    .collection-card h3 {
+      color: #111;
+      margin-top: 0;
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    .collection-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0 0 0;
+    }
+
+    .collection-card li {
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    .collection-card li:last-child {
+      border-bottom: none;
+    }
+
+    .cta-box {
+      background: #111;
+      padding: 40px 30px;
+      border-radius: 8px;
+      text-align: center;
+      margin: 50px 0;
+    }
+
+    .cta-box h2 {
+      color: #fff;
+      margin-top: 0;
+      font-weight: 500;
+    }
+
+    .cta-box p {
+      font-size: 1.05rem;
+      color: #ddd;
+      line-height: 1.6;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: #999;
+      font-size: 0.9rem;
+      margin-top: 50px;
+    }
+
+    /* Search Bar */
+    .search-container {
+      max-width: 600px;
+      margin: 30px auto;
+      position: relative;
+    }
+
+    .search-wrapper {
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 15px 20px;
+      border: 2px solid #e5e5e5;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #111;
+    }
+
+    .search-button {
+      padding: 15px 30px;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .search-button:hover {
+      background: #333;
+    }
+
+    /* Books Display */
+    .books-container {
+      display: none;
+      margin: 30px 0;
+      padding: 30px;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #e5e5e5;
+    }
+
+    .books-container.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .books-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .books-header h3 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #111;
+    }
+
+    .close-button {
+      background: #f5f5f5;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #666;
+      transition: all 0.2s;
+    }
+
+    .close-button:hover {
+      background: #e5e5e5;
+      color: #111;
+    }
+
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 20px;
+    }
+
+    .book-card {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .book-card:hover {
+      transform: scale(1.05);
+    }
+
+    .book-cover {
+      width: 100%;
+      aspect-ratio: 2/3;
+      background: linear-gradient(135deg, #e5e5e5 0%, #f5f5f5 100%);
+      border-radius: 6px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .book-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .book-title {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #111;
+      margin-bottom: 5px;
+      line-height: 1.3;
+    }
+
+    .book-author {
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .genre-card.active {
+      border-color: #111;
+      background: #f9f9f9;
+    }
+
+    /* My Library Section */
+    .my-library-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .borrowed-book-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      gap: 15px;
+      transition: box-shadow 0.2s;
+    }
+
+    .borrowed-book-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .borrowed-book-cover {
+      width: 80px;
+      height: 120px;
+      flex-shrink: 0;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #f0f0f0;
+    }
+
+    .borrowed-book-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .borrowed-book-info {
+      flex: 1;
+    }
+
+    .borrowed-book-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 5px;
+    }
+
+    .borrowed-book-author {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .borrowed-book-meta {
+      font-size: 0.85rem;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .due-date {
+      color: #111;
+      font-weight: 500;
+    }
+
+    .due-date.overdue {
+      color: #e74c3c;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-top: 8px;
+    }
+
+    .status-badge.active {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-badge.overdue {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-state h3 {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+
+      .header {
+        padding: 40px 15px 30px;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        font-size: 1.8rem;
+      }
+
+      .header p {
+        font-size: 1rem;
+      }
+
+      .librarian-intro {
+        padding: 20px;
+      }
+
+      .librarian-intro h2 {
+        font-size: 1.3rem;
+      }
+
+      .genres-section h2 {
+        font-size: 1.5rem;
+      }
+
+      .genres-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 10px;
+      }
+
+      .genre-card {
+        padding: 20px 15px;
+      }
+
+      .genre-card .emoji {
+        font-size: 2rem;
+      }
+
+      .genre-card h3 {
+        font-size: 1rem;
+      }
+
+      .genre-card p {
+        font-size: 0.8rem;
+      }
+
+      .collections {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      .collection-card {
+        padding: 20px;
+      }
+
+      .cta-box {
+        padding: 30px 20px;
+      }
+
+      .search-wrapper {
+        flex-direction: column;
+      }
+
+      .search-button {
+        width: 100%;
+      }
+
+      .books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+      }
+
+      .books-container {
+        padding: 20px;
+      }
+
+      .books-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+      }
+
+      .close-button {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .genres-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .books-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Authentication Modals */
+    .auth-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .auth-modal-overlay.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .auth-modal {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 450px;
+      width: 100%;
+      padding: 40px;
+      position: relative;
+      animation: slideUp 0.3s ease;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .auth-header h2 {
+      font-size: 1.8rem;
+      color: #111;
+      margin: 0 0 10px 0;
+      font-weight: 600;
+    }
+
+    .auth-header p {
+      color: #666;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .auth-form {
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e5e5e5;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #111;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      font-size: 0.85rem;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: #fee;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .auth-button {
+      width: 100%;
+      padding: 14px;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .auth-button:hover {
+      background: #333;
+    }
+
+    .auth-button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    .auth-footer {
+      text-align: center;
+      padding-top: 20px;
+      border-top: 1px solid #e5e5e5;
+    }
+
+    .auth-footer p {
+      color: #666;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .auth-footer a {
+      color: #111;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Login/User Menu Button */
+    .login-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 900;
+    }
+
+    .login-button button {
+      padding: 12px 24px;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-button button:hover {
+      background: #333;
+    }
+
+    /* User Menu */
+    .user-menu {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 900;
+    }
+
+    .user-menu-button {
+      padding: 12px 24px;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-menu-button:hover {
+      background: #333;
+    }
+
+    .user-dropdown {
+      display: none;
+      position: absolute;
+      top: 55px;
+      right: 0;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      min-width: 220px;
+      overflow: hidden;
+    }
+
+    .user-dropdown.show {
+      display: block;
+      animation: slideDown 0.2s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .user-dropdown a {
+      display: block;
+      padding: 12px 20px;
+      color: #333;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .user-dropdown a:last-child {
+      border-bottom: none;
+    }
+
+    .user-dropdown a:hover {
+      background: #f5f5f5;
+    }
+
+    /* Book Modal/Popup */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 700px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #f5f5f5;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      z-index: 1;
+    }
+
+    .modal-close:hover {
+      background: #e5e5e5;
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      display: flex;
+      gap: 30px;
+      padding: 40px;
+    }
+
+    .modal-cover {
+      flex-shrink: 0;
+      width: 200px;
+    }
+
+    .modal-cover img {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .modal-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #111;
+      margin: 0 0 10px 0;
+      line-height: 1.3;
+    }
+
+    .modal-author {
+      font-size: 1.1rem;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .modal-genres {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .genre-tag {
+      background: #f5f5f5;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: #333;
+      border: 1px solid #e5e5e5;
+    }
+
+    .modal-section {
+      margin-top: 20px;
+    }
+
+    .modal-section h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #111;
+      margin: 0 0 10px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-description {
+      color: #555;
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    .modal-actions {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-button.primary {
+      background: #111;
+      color: #fff;
+    }
+
+    .action-button.primary:hover {
+      background: #333;
+    }
+
+    .action-button.secondary {
+      background: #f5f5f5;
+      color: #333;
+      border: 1px solid #e5e5e5;
+    }
+
+    .action-button.secondary:hover {
+      background: #e5e5e5;
+    }
+
+    @media (max-width: 768px) {
+      .modal-body {
+        flex-direction: column;
+        padding: 30px 20px;
+      }
+
+      .modal-cover {
+        width: 100%;
+        max-width: 250px;
+        margin: 0 auto;
+      }
+
+      .modal-title {
+        font-size: 1.5rem;
+      }
+
+      .modal-close {
+        top: 15px;
+        right: 15px;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+      }
+
+      .action-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>📚 Readers Haven Library</h1>
+      <p>Your Premier Digital Collection & AI-Powered Book Discovery</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+      <div class="search-wrapper">
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Search for books, authors, or genres..."
+          id="searchInput"
+        />
+        <button class="search-button" onclick="performSearch()">Search</button>
+      </div>
+    </div>
+
+    <!-- Librarian Introduction -->
+    <div class="librarian-intro">
+      <h2>🤓 Meet Your AI Librarian</h2>
+      <p>
+        Welcome to Readers Haven! I'm your personal AI librarian, here to help you discover your next great read. 
+        Whether you're looking for a specific genre, mood-based recommendations, or want to explore new authors, 
+        I'm here to assist. Click the black button in the bottom-right corner to chat with me!
+      </p>
+    </div>
+
+    <!-- Browse by Genre -->
+    <div class="genres-section">
+      <h2>📖 Browse Our Collection by Genre</h2>
+      <div class="genres-grid">
+        <div class="genre-card" onclick="showBooks('mystery')" data-genre="mystery">
+          <span class="emoji">🕵️</span>
+          <h3>Mystery & Thriller</h3>
+          <p>Suspenseful plots and gripping investigations</p>
+        </div>
+        <div class="genre-card" onclick="showBooks('scifi')" data-genre="scifi">
+          <span class="emoji">🚀</span>
+          <h3>Science Fiction</h3>
+          <p>Future worlds and technological wonders</p>
+        </div>
+        <div class="genre-card" onclick="showBooks('fantasy')" data-genre="fantasy">
+          <span class="emoji">🐉</span>
+          <h3>Fantasy</h3>
+          <p>Magic, adventure, and mythical realms</p>
+        </div>
+        <div class="genre-card" onclick="showBooks('romance')" data-genre="romance">
+          <span class="emoji">❤️</span>
+          <h3>Romance</h3>
+          <p>Love stories and heartfelt connections</p>
+        </div>
+        <div class="genre-card" onclick="showBooks('historical')" data-genre="historical">
+          <span class="emoji">📜</span>
+          <h3>Historical Fiction</h3>
+          <p>Stories from the past brought to life</p>
+        </div>
+        <div class="genre-card" onclick="showBooks('horror')" data-genre="horror">
+          <span class="emoji">😱</span>
+          <h3>Horror</h3>
+          <p>Spine-chilling tales and dark mysteries</p>
+        </div>
+        <div class="genre-card" onclick="showBooks('nonfiction')" data-genre="nonfiction">
+          <span class="emoji">🧠</span>
+          <h3>Non-Fiction</h3>
+          <p>Real stories, biographies, and learning</p>
+        </div>
+        <div class="genre-card" onclick="showBooks('literary')" data-genre="literary">
+          <span class="emoji">🎭</span>
+          <h3>Literary Fiction</h3>
+          <p>Thought-provoking and artistic narratives</p>
+        </div>
+        <div class="genre-card" onclick="showBooks('contemporary')" data-genre="contemporary">
+          <span class="emoji">👨‍👩‍👧‍👦</span>
+          <h3>Family & Contemporary</h3>
+          <p>Modern life and relationships</p>
+        </div>
+        <div class="genre-card" onclick="showBooks('adventure')" data-genre="adventure">
+          <span class="emoji">🌍</span>
+          <h3>Adventure & Travel</h3>
+          <p>Journeys and exploration</p>
+        </div>
+        <div class="genre-card" onclick="showBooks('ya')" data-genre="ya">
+          <span class="emoji">🧒</span>
+          <h3>Young Adult</h3>
+          <p>Coming-of-age and teen adventures</p>
+        </div>
+        <div class="genre-card" onclick="showBooks('classics')" data-genre="classics">
+          <span class="emoji">📚</span>
+          <h3>Classic Literature</h3>
+          <p>Timeless masterpieces</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Books Display Container -->
+    <div id="booksContainer" class="books-container">
+      <div class="books-header">
+        <h3 id="genreTitle">Books in this Genre</h3>
+        <button class="close-button" onclick="closeBooks()">Close ✕</button>
+      </div>
+      <div id="booksGrid" class="books-grid">
+        <!-- Books will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <!-- My Library Section -->
+    <div id="myLibraryContainer" class="books-container">
+      <div class="books-header">
+        <h3 id="libraryTitle">My Borrowed Books</h3>
+        <button class="close-button" onclick="closeMyLibrary()">Close ✕</button>
+      </div>
+      <div id="myLibraryContent" style="padding: 20px;">
+        <!-- User's books will be displayed here -->
+      </div>
+    </div>
+
+    <!-- Featured Collections -->
+    <div class="genres-section">
+      <h2>⭐ Featured Collections</h2>
+      <div class="collections">
+        <div class="collection-card">
+          <h3>📌 Staff Picks</h3>
+          <ul>
+            <li>🌟 Award-winning novels</li>
+            <li>📖 Bestselling series</li>
+            <li>💎 Hidden gems</li>
+            <li>🎯 Trending reads</li>
+          </ul>
+        </div>
+        <div class="collection-card">
+          <h3>🎭 Browse by Mood</h3>
+          <ul>
+            <li>☀️ Uplifting & Inspirational</li>
+            <li>🌙 Dark & Atmospheric</li>
+            <li>😂 Light & Humorous</li>
+            <li>🤔 Thought-provoking</li>
+          </ul>
+        </div>
+        <div class="collection-card">
+          <h3>📅 New Arrivals</h3>
+          <ul>
+            <li>🆕 This month's additions</li>
+            <li>🔥 Hot off the press</li>
+            <li>📬 Pre-order upcoming titles</li>
+            <li>🎉 Recently released</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="cta-box">
+      <h2>🤝 Let's Find Your Next Great Read!</h2>
+      <p>
+        Click the librarian button in the bottom-right corner to get personalized recommendations,
+        check book availability, borrow, or reserve titles from our extensive collection.
+      </p>
+      <p style="margin-top: 20px; font-size: 0.95rem;">
+        💬 Ask me about: Genres • Authors • Moods • Themes • Series • Awards • Reading Level
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>Powered by Flowise, Groq & Cohere | © 2025 Readers Haven</p>
+    </div>
+  </div>
+
+  <!-- Authentication Modals -->
+  <!-- Login Modal -->
+  <div id="loginModal" class="auth-modal-overlay">
+    <div class="auth-modal">
+      <button class="modal-close" onclick="closeAuthModal('login')">✕</button>
+      <div class="auth-header">
+        <h2>📚 Welcome Back</h2>
+        <p>Login to your Readers Haven account</p>
+      </div>
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" required placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" required placeholder="Enter your password">
+        </div>
+        <div id="loginError" class="error-message"></div>
+        <button type="submit" class="auth-button">Login</button>
+      </form>
+      <div class="auth-footer">
+        <p>Don't have an account? <a href="#" onclick="switchAuthModal('signup')">Sign up</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div id="signupModal" class="auth-modal-overlay">
+    <div class="auth-modal">
+      <button class="modal-close" onclick="closeAuthModal('signup')">✕</button>
+      <div class="auth-header">
+        <h2>📖 Join Readers Haven</h2>
+        <p>Create your account and start reading</p>
+      </div>
+      <form id="signupForm" class="auth-form">
+        <div class="form-group">
+          <label for="signupName">Full Name</label>
+          <input type="text" id="signupName" required placeholder="John Doe">
+        </div>
+        <div class="form-group">
+          <label for="signupEmail">Email</label>
+          <input type="email" id="signupEmail" required placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label for="signupPassword">Password</label>
+          <input type="password" id="signupPassword" required placeholder="At least 6 characters" minlength="6">
+        </div>
+        <div class="form-group">
+          <label for="signupPasswordConfirm">Confirm Password</label>
+          <input type="password" id="signupPasswordConfirm" required placeholder="Re-enter password">
+        </div>
+        <div id="signupError" class="error-message"></div>
+        <button type="submit" class="auth-button">Create Account</button>
+      </form>
+      <div class="auth-footer">
+        <p>Already have an account? <a href="#" onclick="switchAuthModal('login')">Login</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Menu (shown when logged in) -->
+  <div id="userMenu" class="user-menu" style="display: none;">
+    <button class="user-menu-button" onclick="toggleUserDropdown()">
+      <span id="userName">User</span>
+      <span>▼</span>
+    </button>
+    <div id="userDropdown" class="user-dropdown">
+      <a href="#" onclick="showMyBorrows()">📚 My Borrowed Books</a>
+      <a href="#" onclick="showMyReservations()">📌 My Reservations</a>
+      <a href="#" onclick="showBorrowHistory()">📜 Borrowing History</a>
+      <a href="#" onclick="logout()">🚪 Logout</a>
+    </div>
+  </div>
+
+  <!-- Login Button (shown when not logged in) -->
+  <div id="loginButton" class="login-button">
+    <button onclick="openAuthModal('login')">Login / Sign Up</button>
+  </div>
+
+  <!-- Book Details Modal -->
+  <div id="bookModal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-body">
+        <div class="modal-cover">
+          <img id="modalCover" src="" alt="Book cover" />
+        </div>
+        <div class="modal-info">
+          <h2 id="modalTitle" class="modal-title"></h2>
+          <div id="modalAuthor" class="modal-author"></div>
+          <div id="modalGenres" class="modal-genres"></div>
+          <div class="modal-section">
+            <h4>Description</h4>
+            <p id="modalDescription" class="modal-description"></p>
+          </div>
+          <div class="modal-actions">
+            <button class="action-button primary" onclick="borrowBook()">Borrow Book</button>
+            <button class="action-button secondary" onclick="reserveBook()">Reserve</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive JavaScript -->
+  <script>
+    // API Configuration
+    const API_URL = 'http://localhost:5000/api';
+    let currentUser = null;
+    let authToken = localStorage.getItem('authToken');
+
+    // Check if user is logged in on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      checkAuthStatus();
+    });
+
+    // Check authentication status
+    async function checkAuthStatus() {
+      if (authToken) {
+        try {
+          const response = await fetch(`${API_URL}/auth/me`, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            currentUser = data.data.user;
+            showUserMenu();
+          } else {
+            logout();
+          }
+        } catch (error) {
+          console.error('Auth check failed:', error);
+          logout();
+        }
+      }
+    }
+
+    // Authentication Modal Functions
+    function openAuthModal(type) {
+      const modal = document.getElementById(type === 'login' ? 'loginModal' : 'signupModal');
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeAuthModal(type) {
+      const modal = document.getElementById(type === 'login' ? 'loginModal' : 'signupModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      
+      // Clear form
+      const form = document.getElementById(type === 'login' ? 'loginForm' : 'signupForm');
+      form.reset();
+      
+      // Clear errors
+      const errorDiv = document.getElementById(type === 'login' ? 'loginError' : 'signupError');
+      errorDiv.classList.remove('show');
+    }
+
+    function switchAuthModal(toType) {
+      closeAuthModal(toType === 'login' ? 'signup' : 'login');
+      setTimeout(() => openAuthModal(toType), 300);
+    }
+
+    // Login Function
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const errorDiv = document.getElementById('loginError');
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Logging in...';
+      errorDiv.classList.remove('show');
+      
+      try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          authToken = data.data.token;
+          currentUser = data.data.user;
+          localStorage.setItem('authToken', authToken);
+          localStorage.setItem('user', JSON.stringify(currentUser));
+          
+          closeAuthModal('login');
+          showUserMenu();
+          
+          alert(`🎉 Welcome back, ${currentUser.name}!`);
+        } else {
+          errorDiv.textContent = data.message || 'Login failed. Please check your credentials.';
+          errorDiv.classList.add('show');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        errorDiv.textContent = 'Unable to connect to server. Please make sure the backend is running.';
+        errorDiv.classList.add('show');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Login';
+      }
+    });
+
+    // Signup Function
+    document.getElementById('signupForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('signupName').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+      const errorDiv = document.getElementById('signupError');
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      
+      errorDiv.classList.remove('show');
+      
+      // Validate passwords match
+      if (password !== passwordConfirm) {
+        errorDiv.textContent = 'Passwords do not match!';
+        errorDiv.classList.add('show');
+        return;
+      }
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account...';
+      
+      try {
+        const response = await fetch(`${API_URL}/auth/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name, email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          authToken = data.data.token;
+          currentUser = data.data.user;
+          localStorage.setItem('authToken', authToken);
+          localStorage.setItem('user', JSON.stringify(currentUser));
+          
+          closeAuthModal('signup');
+          showUserMenu();
+          
+          alert(`🎉 Welcome to Readers Haven, ${currentUser.name}! Your account has been created successfully.`);
+        } else {
+          errorDiv.textContent = data.message || 'Signup failed. Please try again.';
+          errorDiv.classList.add('show');
+        }
+      } catch (error) {
+        console.error('Signup error:', error);
+        errorDiv.textContent = 'Unable to connect to server. Please make sure the backend is running.';
+        errorDiv.classList.add('show');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+      }
+    });
+
+    // Show/Hide User Menu
+    function showUserMenu() {
+      document.getElementById('loginButton').style.display = 'none';
+      document.getElementById('userMenu').style.display = 'block';
+      document.getElementById('userName').textContent = currentUser.name;
+    }
+
+    function hideUserMenu() {
+      document.getElementById('loginButton').style.display = 'block';
+      document.getElementById('userMenu').style.display = 'none';
+    }
+
+    // Toggle User Dropdown
+    function toggleUserDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      const userMenu = document.getElementById('userMenu');
+      const dropdown = document.getElementById('userDropdown');
+      
+      if (userMenu && !userMenu.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+    // Logout Function
+    function logout() {
+      authToken = null;
+      currentUser = null;
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      hideUserMenu();
+      alert('You have been logged out successfully.');
+    }
+
+    // Close My Library
+    function closeMyLibrary() {
+      const container = document.getElementById('myLibraryContainer');
+      container.classList.remove('active');
+    }
+
+    // Return Book Function
+    async function returnBook(borrowId) {
+      if (!confirm('Are you sure you want to return this book?')) {
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API_URL}/borrows/return/${borrowId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          alert(`✅ ${data.message}`);
+          // Refresh the borrowed books list
+          showMyBorrows();
+        } else {
+          alert(`❌ ${data.message}`);
+        }
+      } catch (error) {
+        console.error('Return error:', error);
+        alert('Error returning book. Please try again.');
+      }
+    }
+
+    // User Actions - Show My Borrowed Books
+    async function showMyBorrows() {
+      if (!authToken) {
+        alert('Please login first');
+        openAuthModal('login');
+        return;
+      }
+      
+      const container = document.getElementById('myLibraryContainer');
+      const title = document.getElementById('libraryTitle');
+      const content = document.getElementById('myLibraryContent');
+      
+      title.textContent = '📚 My Borrowed Books';
+      content.innerHTML = '<p style="text-align: center;">Loading...</p>';
+      container.classList.add('active');
+      
+      try {
+        const response = await fetch(`${API_URL}/borrows/my-borrows`, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          const borrows = data.data.borrows;
+          
+          if (borrows.length === 0) {
+            content.innerHTML = `
+              <div class="empty-state">
+                <h3>📚 No Borrowed Books</h3>
+                <p>Browse our collection and borrow your first book!</p>
+              </div>
+            `;
+          } else {
+            content.innerHTML = '<div class="my-library-grid"></div>';
+            const grid = content.querySelector('.my-library-grid');
+            
+            borrows.forEach(b => {
+              const borrowDate = new Date(b.borrow_date || b.borrowDate);
+              const dueDate = new Date(b.due_date || b.dueDate);
+              const today = new Date();
+              const daysRemaining = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+              const isOverdue = daysRemaining < 0;
+              
+              const card = document.createElement('div');
+              card.className = 'borrowed-book-card';
+              card.innerHTML = `
+                <div class="borrowed-book-cover">
+                  <img src="${b.book.cover_image || b.book.coverImage}" alt="${b.book.title}" />
+                </div>
+                <div class="borrowed-book-info">
+                  <div class="borrowed-book-title">${b.book.title}</div>
+                  <div class="borrowed-book-author">by ${b.book.author}</div>
+                  <div class="borrowed-book-meta">
+                    <div>📖 Borrowed: ${borrowDate.toLocaleDateString()}</div>
+                    <div class="due-date ${isOverdue ? 'overdue' : ''}">
+                      📅 Due: ${dueDate.toLocaleDateString()} 
+                      ${!isOverdue ? `(${daysRemaining} days left)` : `(${Math.abs(daysRemaining)} days overdue!)`}
+                    </div>
+                    <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
+                      <span class="status-badge ${b.status}">${b.status}</span>
+                      <button onclick="returnBook(${b.id})" style="padding: 6px 12px; background: #111; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">Return Book</button>
+                    </div>
+                  </div>
+                </div>
+              `;
+              grid.appendChild(card);
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching borrows:', error);
+        content.innerHTML = '<p style="text-align: center; color: red;">Error loading borrowed books</p>';
+      }
+      
+      setTimeout(() => {
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+
+    async function showMyReservations() {
+      if (!authToken) {
+        alert('Please login first');
+        openAuthModal('login');
+        return;
+      }
+      
+      const container = document.getElementById('myLibraryContainer');
+      const title = document.getElementById('libraryTitle');
+      const content = document.getElementById('myLibraryContent');
+      
+      title.textContent = '📌 My Reservations';
+      content.innerHTML = '<p style="text-align: center;">Loading...</p>';
+      container.classList.add('active');
+      
+      try {
+        const response = await fetch(`${API_URL}/borrows/my-reservations`, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          const reservations = data.data.reservations;
+          
+          if (reservations.length === 0) {
+            content.innerHTML = `
+              <div class="empty-state">
+                <h3>📌 No Reservations</h3>
+                <p>Reserve books when they're unavailable to get them when returned.</p>
+              </div>
+            `;
+          } else {
+            content.innerHTML = '<div class="my-library-grid"></div>';
+            const grid = content.querySelector('.my-library-grid');
+            
+            reservations.forEach(r => {
+              const reserveDate = new Date(r.borrow_date || r.reservationDate);
+              const expiryDate = new Date(r.reservationExpiryDate || r.due_date);
+              const today = new Date();
+              const daysLeft = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+              
+              const card = document.createElement('div');
+              card.className = 'borrowed-book-card';
+              card.innerHTML = `
+                <div class="borrowed-book-cover">
+                  <img src="${r.book.cover_image || r.book.coverImage}" alt="${r.book.title}" />
+                </div>
+                <div class="borrowed-book-info">
+                  <div class="borrowed-book-title">${r.book.title}</div>
+                  <div class="borrowed-book-author">by ${r.book.author}</div>
+                  <div class="borrowed-book-meta">
+                    <div>📌 Reserved: ${reserveDate.toLocaleDateString()}</div>
+                    <div class="due-date">
+                      ⏰ Pick up by: ${expiryDate.toLocaleDateString()} 
+                      (${daysLeft > 0 ? `${daysLeft} days left` : 'Expired'})
+                    </div>
+                    <div style="margin-top: 10px;">
+                      <span class="status-badge active">Reserved</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+              grid.appendChild(card);
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching reservations:', error);
+        content.innerHTML = '<p style="text-align: center; color: red;">Error loading reservations</p>';
+      }
+      
+      setTimeout(() => {
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+
+    async function showBorrowHistory() {
+      if (!authToken) {
+        alert('Please login first');
+        openAuthModal('login');
+        return;
+      }
+      
+      const container = document.getElementById('myLibraryContainer');
+      const title = document.getElementById('libraryTitle');
+      const content = document.getElementById('myLibraryContent');
+      
+      title.textContent = '📜 Borrowing History';
+      content.innerHTML = '<p style="text-align: center;">Loading...</p>';
+      container.classList.add('active');
+      
+      try {
+        const response = await fetch(`${API_URL}/borrows/history`, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          const history = data.data.history;
+          
+          if (history.length === 0) {
+            content.innerHTML = `
+              <div class="empty-state">
+                <h3>📜 No History Yet</h3>
+                <p>Start borrowing books to build your reading history!</p>
+              </div>
+            `;
+          } else {
+            content.innerHTML = '<div class="my-library-grid"></div>';
+            const grid = content.querySelector('.my-library-grid');
+            
+            history.slice(0, 20).forEach(h => {
+              const borrowDate = new Date(h.borrow_date || h.borrowDate);
+              const returnDate = h.return_date ? new Date(h.return_date) : null;
+              
+              const card = document.createElement('div');
+              card.className = 'borrowed-book-card';
+              card.innerHTML = `
+                <div class="borrowed-book-cover">
+                  <img src="${h.book.cover_image || h.book.coverImage}" alt="${h.book.title}" />
+                </div>
+                <div class="borrowed-book-info">
+                  <div class="borrowed-book-title">${h.book.title}</div>
+                  <div class="borrowed-book-author">by ${h.book.author}</div>
+                  <div class="borrowed-book-meta">
+                    <div>📅 Borrowed: ${borrowDate.toLocaleDateString()}</div>
+                    ${returnDate ? `<div>✅ Returned: ${returnDate.toLocaleDateString()}</div>` : ''}
+                    <span class="status-badge ${h.status}">${h.status}</span>
+                  </div>
+                </div>
+              `;
+              grid.appendChild(card);
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching history:', error);
+        content.innerHTML = '<p style="text-align: center; color: red;">Error loading history</p>';
+      }
+      
+      setTimeout(() => {
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+
+    // Book database with sample books for each genre
+    const bookDatabase = {
+      mystery: [
+        { 
+          title: "The Silent Patient", 
+          author: "Alex Michaelides", 
+          cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop",
+          genres: ["Mystery", "Thriller", "Psychological"],
+          description: "Alicia Berenson's life is seemingly perfect. A famous painter married to an in-demand fashion photographer, she lives in a grand house with big windows overlooking a park in one of London's most desirable areas. One evening her husband Gabriel returns home late from a fashion shoot, and Alicia shoots him five times in the face, and then never speaks another word."
+        },
+        { 
+          title: "Gone Girl", 
+          author: "Gillian Flynn", 
+          cover: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&h=450&fit=crop",
+          genres: ["Mystery", "Thriller", "Suspense"],
+          description: "On a warm summer morning in North Carthage, Missouri, it is Nick and Amy Dunne's fifth wedding anniversary. Presents are being wrapped and reservations are being made when Nick's clever and beautiful wife disappears. Husband-of-the-Year Nick isn't doing himself any favors with cringe-worthy daydreams about the slope and shape of his wife's head."
+        },
+        { 
+          title: "The Girl with the Dragon Tattoo", 
+          author: "Stieg Larsson", 
+          cover: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&h=450&fit=crop",
+          genres: ["Mystery", "Crime", "Thriller"],
+          description: "Harriet Vanger, a scion of one of Sweden's wealthiest families disappeared over forty years ago. All these years later, her aged uncle continues to seek the truth. He hires Mikael Blomkvist, a crusading journalist recently trapped by a libel conviction, to investigate. He is aided by the pierced and tattooed punk prodigy Lisbeth Salander."
+        },
+        { 
+          title: "Big Little Lies", 
+          author: "Liane Moriarty", 
+          cover: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=300&h=450&fit=crop",
+          genres: ["Mystery", "Contemporary", "Drama"],
+          description: "Big Little Lies follows three women, each at a crossroads: Madeline is a force to be reckoned with. She's funny and biting, passionate, she remembers everything and forgives no one. Her ex-husband and his yogi new wife have moved into her beloved beachside community, and their daughter is in the same kindergarten class as Madeline's youngest."
+        },
+        { 
+          title: "The Da Vinci Code", 
+          author: "Dan Brown", 
+          cover: "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=300&h=450&fit=crop",
+          genres: ["Mystery", "Thriller", "Adventure"],
+          description: "While in Paris, Harvard symbologist Robert Langdon is awakened by a phone call in the dead of the night. The elderly curator of the Louvre has been murdered inside the museum, his body covered in baffling symbols. As Langdon and gifted French cryptologist Sophie Neveu sort through the bizarre riddles, they are stunned to discover a trail of clues hidden in the works of Leonardo da Vinci."
+        },
+        { 
+          title: "And Then There Were None", 
+          author: "Agatha Christie", 
+          cover: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=300&h=450&fit=crop",
+          genres: ["Mystery", "Classic", "Crime"],
+          description: "Ten strangers are lured to an isolated island mansion off the Devon coast by a mysterious 'U.N. Owen.' At dinner a recorded message accuses each of them in turn of having a guilty secret, and by the end of the night one of the guests is dead. Stranded by a violent storm, and haunted by a nursery rhyme counting down one by one, they begin to die."
+        }
+      ],
+      scifi: [
+        { 
+          title: "Dune", 
+          author: "Frank Herbert", 
+          cover: "https://images.unsplash.com/photo-1589998059171-988d887df646?w=300&h=450&fit=crop",
+          genres: ["Science Fiction", "Adventure", "Epic"],
+          description: "Set on the desert planet Arrakis, Dune is the story of the boy Paul Atreides, heir to a noble family tasked with ruling an inhospitable world where the only thing of value is the 'spice' melange, a drug capable of extending life and enhancing consciousness. Coveted across the known universe, melange is a prize worth killing for."
+        },
+        { 
+          title: "The Martian", 
+          author: "Andy Weir", 
+          cover: "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=300&h=450&fit=crop",
+          genres: ["Science Fiction", "Adventure", "Survival"],
+          description: "Six days ago, astronaut Mark Watney became one of the first people to walk on Mars. Now, he's sure he'll be the first person to die there. After a dust storm nearly kills him and forces his crew to evacuate while thinking him dead, Mark finds himself stranded and completely alone with no way to even signal Earth that he's alive."
+        },
+        { 
+          title: "Foundation", 
+          author: "Isaac Asimov", 
+          cover: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=300&h=450&fit=crop",
+          genres: ["Science Fiction", "Classic", "Space Opera"],
+          description: "For twelve thousand years the Galactic Empire has ruled supreme. Now it is dying. But only Hari Seldon, creator of the revolutionary science of psychohistory, can see into the future—to a dark age of ignorance, barbarism, and warfare that will last thirty thousand years. To preserve knowledge and save mankind, Seldon gathers the best minds in the Empire and brings them to a bleak planet at the edge of the Galaxy to serve as a beacon of hope for a future generations."
+        },
+        { 
+          title: "Ender's Game", 
+          author: "Orson Scott Card", 
+          cover: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=300&h=450&fit=crop",
+          genres: ["Science Fiction", "Military", "Young Adult"],
+          description: "In order to develop a secure defense against a hostile alien race's next attack, government agencies breed child geniuses and train them as soldiers. A brilliant young boy, Andrew 'Ender' Wiggin lives with his kind but distant parents, his sadistic brother Peter, and the person he loves more than anyone else, his sister Valentine."
+        },
+        { 
+          title: "Neuromancer", 
+          author: "William Gibson", 
+          cover: "https://images.unsplash.com/photo-1506880135364-e28660dc35fa?w=300&h=450&fit=crop",
+          genres: ["Science Fiction", "Cyberpunk", "Thriller"],
+          description: "Case was the sharpest data-thief in the matrix—until he crossed the wrong people and they crippled his nervous system, banishing him from cyberspace. Now a mysterious new employer has recruited him for a last-chance run at an unthinkably powerful artificial intelligence. With a dead man riding shotgun and Molly, a mirror-eyed street-samurai, to watch his back, Case is ready for the adventure that upped the ante on an entire genre of fiction."
+        },
+        { 
+          title: "The Hitchhiker's Guide", 
+          author: "Douglas Adams", 
+          cover: "https://images.unsplash.com/photo-1534670007418-fbb7f6cf32c3?w=300&h=450&fit=crop",
+          genres: ["Science Fiction", "Comedy", "Adventure"],
+          description: "Seconds before Earth is demolished to make way for a galactic freeway, Arthur Dent is plucked off the planet by his friend Ford Prefect, a researcher for the revised edition of The Hitchhiker's Guide to the Galaxy who, for the last fifteen years, has been posing as an out-of-work actor. Together, this dynamic pair began a journey through space aided by a galaxyful of fellow travelers."
+        }
+      ],
+      fantasy: [
+        { 
+          title: "The Hobbit", 
+          author: "J.R.R. Tolkien", 
+          cover: "https://images.unsplash.com/photo-1621944190310-e3cca1564bd7?w=300&h=450&fit=crop",
+          genres: ["Fantasy", "Adventure", "Classic"],
+          description: "Bilbo Baggins is a hobbit who enjoys a comfortable, unambitious life, rarely traveling any farther than his pantry or cellar. But his contentment is disturbed when the wizard Gandalf and a company of dwarves arrive on his doorstep one day to whisk him away on an adventure. They have launched a plot to raid the treasure hoard guarded by Smaug the Magnificent, a large and very dangerous dragon."
+        },
+        { 
+          title: "Harry Potter and the Sorcerer's Stone", 
+          author: "J.K. Rowling", 
+          cover: "https://images.unsplash.com/photo-1618488905203-3b3c9f937111?w=300&h=450&fit=crop",
+          genres: ["Fantasy", "Young Adult", "Magic"],
+          description: "Harry Potter has never even heard of Hogwarts when the letters start dropping on the doormat at number four, Privet Drive. Addressed in green ink on yellowish parchment with a purple seal, they are swiftly confiscated by his grisly aunt and uncle. Then, on Harry's eleventh birthday, a great beetle-eyed giant of a man called Rubeus Hagrid bursts in with some astonishing news: Harry Potter is a wizard, and he has a place at Hogwarts School of Witchcraft and Wizardry."
+        },
+        { 
+          title: "A Game of Thrones", 
+          author: "George R.R. Martin", 
+          cover: "https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?w=300&h=450&fit=crop",
+          genres: ["Fantasy", "Epic", "Political"],
+          description: "Long ago, in a time forgotten, a preternatural event threw the seasons out of balance. In a land where summers can last decades and winters a lifetime, trouble is brewing. The cold is returning, and in the frozen wastes to the north of Winterfell, sinister forces are massing beyond the kingdom's protective Wall. To the south, the king's powers are failing—his most trusted adviser dead under mysterious circumstances and his enemies emerging from the shadows of the throne."
+        },
+        { 
+          title: "The Name of the Wind", 
+          author: "Patrick Rothfuss", 
+          cover: "https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?w=300&h=450&fit=crop",
+          genres: ["Fantasy", "Adventure", "Magic"],
+          description: "Kvothe has come to retire as an innkeeper in a small town. Yet his story is one of a legend: a musician, magician, thief, and assassin. His tale is one of sorrow, survival, and a search for answers. It is a tale told from his own point of view. And he has decided it is time to tell the truth. The Kingkiller Chronicle begins here, and this is the story of how a hero was made."
+        },
+        { 
+          title: "The Way of Kings", 
+          author: "Brandon Sanderson", 
+          cover: "https://images.unsplash.com/photo-1609667083964-f3dbecb7e7a5?w=300&h=450&fit=crop",
+          genres: ["Fantasy", "Epic", "Adventure"],
+          description: "Roshar is a world of stone and storms. Uncanny tempests of incredible power sweep across the rocky terrain so frequently that they have shaped ecology and civilization alike. It has been centuries since the fall of the ten consecrated orders known as the Knights Radiant, but their Shardblades and Shardplate remain: mystical swords and suits of armor that transform ordinary men into near-invincible warriors."
+        },
+        { 
+          title: "The Chronicles of Narnia", 
+          author: "C.S. Lewis", 
+          cover: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=300&h=450&fit=crop",
+          genres: ["Fantasy", "Classic", "Adventure"],
+          description: "Four adventurous siblings—Peter, Susan, Edmund, and Lucy Pevensie—step through a wardrobe door and into the land of Narnia, a land frozen in eternal winter and enslaved by the power of the White Witch. But when almost all hope is lost, the return of the Great Lion, Aslan, signals a great change... and a great sacrifice."
+        }
+      ],
+      romance: [
+        { 
+          title: "Pride and Prejudice", 
+          author: "Jane Austen", 
+          cover: "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=300&h=450&fit=crop",
+          genres: ["Romance", "Classic", "Historical"],
+          description: "Since its immediate success in 1813, Pride and Prejudice has remained one of the most popular novels in the English language. Jane Austen called this brilliant work 'her own darling child' and its vivacious heroine, Elizabeth Bennet, 'as delightful a creature as ever appeared in print.' The romantic clash between the opinionated Elizabeth and her proud beau, Mr. Darcy, is a splendid performance of civilized sparring."
+        },
+        { 
+          title: "The Notebook", 
+          author: "Nicholas Sparks", 
+          cover: "https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=300&h=450&fit=crop",
+          genres: ["Romance", "Contemporary", "Drama"],
+          description: "Every so often a love story so captures our hearts that it becomes more than a story—it becomes an experience to remember forever. The Notebook is such a book. It is a celebration of how passion can be ageless and timeless, a tale that moves us to laughter and tears and makes us believe in true love all over again."
+        },
+        { 
+          title: "Me Before You", 
+          author: "Jojo Moyes", 
+          cover: "https://images.unsplash.com/photo-1476275466078-4007374efbbe?w=300&h=450&fit=crop",
+          genres: ["Romance", "Contemporary", "Drama"],
+          description: "Louisa Clark is an ordinary girl living an exceedingly ordinary life—steady boyfriend, close family—who has barely been farther afield than their tiny village. She takes a badly needed job working for ex–Master of the Universe Will Traynor, who is wheelchair bound after an accident. Will has always lived a huge life—big deals, extreme sports, worldwide travel—and now he's pretty sure he cannot live the way he is."
+        },
+        { 
+          title: "The Time Traveler's Wife", 
+          author: "Audrey Niffenegger", 
+          cover: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=300&h=450&fit=crop",
+          genres: ["Romance", "Science Fiction", "Drama"],
+          description: "A dazzling novel in the most untraditional fashion, this is the remarkable story of Henry DeTamble, a dashing, adventuresome librarian who travels involuntarily through time, and Clare Abshire, an artist whose life takes a natural sequential course. Henry and Clare's passionate love affair endures across a sea of time and captures the two lovers in an impossibly romantic trap."
+        },
+        { 
+          title: "Outlander", 
+          author: "Diana Gabaldon", 
+          cover: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=300&h=450&fit=crop",
+          genres: ["Romance", "Historical", "Time Travel"],
+          description: "Scottish Highlands, 1945. Claire Randall, a former British combat nurse, is just back from the war and reunited with her husband on a second honeymoon when she walks through a standing stone in one of the ancient circles that dot the British Isles. Suddenly she is a Sassenach—an 'outlander'—in a Scotland torn by war and raiding clans in the year of Our Lord...1743."
+        },
+        { 
+          title: "The Fault in Our Stars", 
+          author: "John Green", 
+          cover: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=450&fit=crop",
+          genres: ["Romance", "Young Adult", "Contemporary"],
+          description: "Despite the tumor-shrinking medical miracle that has bought her a few years, Hazel has never been anything but terminal, her final chapter inscribed upon diagnosis. But when a gorgeous plot twist named Augustus Waters suddenly appears at Cancer Kid Support Group, Hazel's story is about to be completely rewritten."
+        }
+      ],
+      historical: [
+        { 
+          title: "All the Light We Cannot See", 
+          author: "Anthony Doerr", 
+          cover: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=300&h=450&fit=crop",
+          genres: ["Historical Fiction", "World War II", "Literary"],
+          description: "Marie-Laure lives in Paris near the Museum of Natural History, where her father works. When she is twelve, the Nazis occupy Paris and father and daughter flee to the walled citadel of Saint-Malo, where Marie-Laure's reclusive great uncle lives in a tall house by the sea. With them they carry what might be the museum's most valuable and dangerous jewel."
+        },
+        { 
+          title: "The Book Thief", 
+          author: "Markus Zusak", 
+          cover: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=450&fit=crop",
+          genres: ["Historical Fiction", "World War II", "Coming of Age"],
+          description: "It is 1939. Nazi Germany. The country is holding its breath. Death has never been busier, and will be busier still. By her brother's graveside, Liesel's life is changed when she picks up a single object, partially hidden in the snow. It is The Grave Digger's Handbook, left behind there by accident, and it is her first act of book thievery."
+        },
+        { 
+          title: "Wolf Hall", 
+          author: "Hilary Mantel", 
+          cover: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=300&h=450&fit=crop",
+          genres: ["Historical Fiction", "Tudor Period", "Political"],
+          description: "England in the 1520s is a heartbeat from disaster. If the king dies without a male heir, the country could be destroyed by civil war. Henry VIII wants to annul his marriage of twenty years and marry Anne Boleyn. The pope and most of Europe opposes him. Into this impasse steps Thomas Cromwell: a wholly original man, a charmer and a bully, both idealist and opportunist, astute in reading people."
+        },
+        { 
+          title: "The Pillars of the Earth", 
+          author: "Ken Follett", 
+          cover: "https://images.unsplash.com/photo-1476357471311-43c0db9fb2b4?w=300&h=450&fit=crop",
+          genres: ["Historical Fiction", "Medieval", "Epic"],
+          description: "Set in twelfth-century England, this epic tale of passion and conflict follows the building of a cathedral against a backdrop of religious strife and power struggles. The resourceful Tom Builder and the mysterious noblewoman Lady Aliena are brought together by their shared dream—and by the ambitions of a man who will stop at nothing to become England's paramount spiritual leader."
+        },
+        { 
+          title: "The Nightingale", 
+          author: "Kristin Hannah", 
+          cover: "https://images.unsplash.com/photo-1519558260268-cde7e03a0152?w=300&h=450&fit=crop",
+          genres: ["Historical Fiction", "World War II", "Family"],
+          description: "In the quiet village of Carriveau, Vianne Mauriac says goodbye to her husband, Antoine, as he heads for the Front. She doesn't believe that the Nazis will invade France...but invade they do, in droves of marching soldiers, in caravans of trucks and tanks, in planes that fill the skies and drop bombs upon the innocent. When a German captain requisitions Vianne's home, she and her daughter must live with the enemy."
+        },
+        { 
+          title: "Pachinko", 
+          author: "Min Jin Lee", 
+          cover: "https://images.unsplash.com/photo-1509266272358-7701da638078?w=300&h=450&fit=crop",
+          genres: ["Historical Fiction", "Family Saga", "Cultural"],
+          description: "Spanning from 1910 to 1989, Pachinko follows four generations of a Korean family as they move to Japan. The story begins in 1910 with Sunja, a teenage girl living in a fishing village in Korea, who falls pregnant by a wealthy stranger. She accepts a marriage proposal from a kind minister passing through on his way to Japan. Her new life brings unexpected hardships."
+        }
+      ],
+      horror: [
+        { 
+          title: "The Shining", 
+          author: "Stephen King", 
+          cover: "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=300&h=450&fit=crop",
+          genres: ["Horror", "Thriller", "Supernatural"],
+          description: "Jack Torrance's new job at the Overlook Hotel is the perfect chance for a fresh start. As the off-season caretaker at the atmospheric old hotel, he'll have plenty of time to spend reconnecting with his family and working on his writing. But as the harsh winter weather sets in, the idyllic location feels ever more remote...and more sinister. And the only one to notice the strange and terrible forces gathering around the Overlook is Danny Torrance, a uniquely gifted five-year-old."
+        },
+        { 
+          title: "It", 
+          author: "Stephen King", 
+          cover: "https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=300&h=450&fit=crop",
+          genres: ["Horror", "Thriller", "Supernatural"],
+          description: "Welcome to Derry, Maine. It's a small city, a place as hauntingly familiar as your own hometown. Only in Derry the haunting is real. They were seven teenagers when they first stumbled upon the horror. Now they are grown-up men and women who have gone out into the big world to gain success and happiness. But the promise they made twenty-eight years ago calls them reunite in the same place where, as teenagers, they battled an evil creature that preyed on the city's children."
+        },
+        { 
+          title: "Dracula", 
+          author: "Bram Stoker", 
+          cover: "https://images.unsplash.com/photo-1506880135364-e28660dc35fa?w=300&h=450&fit=crop",
+          genres: ["Horror", "Gothic", "Classic"],
+          description: "When Jonathan Harker visits Transylvania to help Count Dracula with the purchase of a London house, he makes horrifying discoveries about his client and his castle. Soon afterwards, disturbing incidents unfold in England: an unmanned ship is wrecked at Whitby; strange puncture marks appear on a young woman's neck; and the inmate of a lunatic asylum raves about the arrival of his 'Master'."
+        },
+        { 
+          title: "The Haunting of Hill House", 
+          author: "Shirley Jackson", 
+          cover: "https://images.unsplash.com/photo-1577741314755-048d8525d31e?w=300&h=450&fit=crop",
+          genres: ["Horror", "Gothic", "Psychological"],
+          description: "Four seekers have arrived at the rambling old pile known as Hill House: Dr. Montague, an occult scholar looking for solid evidence of psychic phenomena; Theodora, his lovely assistant; Luke, the adventurous future heir of Hill House; and Eleanor, a lonely, vulnerable girl who is desperate to find a place to belong. Drawn to a house that is not quite in the natural world, Eleanor thinks she has finally found a place to call home."
+        },
+        { 
+          title: "Mexican Gothic", 
+          author: "Silvia Moreno-Garcia", 
+          cover: "https://images.unsplash.com/photo-1513001900722-370f803f498d?w=300&h=450&fit=crop",
+          genres: ["Horror", "Gothic", "Mystery"],
+          description: "After receiving a frantic letter from her newly-wed cousin begging for someone to save her from a mysterious doom, Noemí Taboada heads to High Place, a distant house in the Mexican countryside. She's not sure what she will find—her cousin's husband, a handsome Englishman, is a stranger, and Noemí knows little about the region. Noemí is also an unlikely rescuer: She's a glamorous debutante, and her chic gowns and perfect red lipstick are more suited for cocktail parties than amateur sleuthing."
+        },
+        { 
+          title: "Bird Box", 
+          author: "Josh Malerman", 
+          cover: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=300&h=450&fit=crop",
+          genres: ["Horror", "Post-Apocalyptic", "Thriller"],
+          description: "Something is out there, something terrifying that must not be seen. One glimpse of it, and a person is driven to deadly violence. No one knows what it is or where it came from. Five years after it began, a handful of scattered survivors remains, including Malorie and her two young children. Living in an abandoned house near the river, she has dreamed of fleeing to a place where they might be safe. Now that the boy and girl are four, it's time to go."
+        }
+      ],
+      nonfiction: [
+        { 
+          title: "Sapiens", 
+          author: "Yuval Noah Harari", 
+          cover: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=300&h=450&fit=crop",
+          genres: ["Non-Fiction", "History", "Science"],
+          description: "From a renowned historian comes a groundbreaking narrative of humanity's creation and evolution that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be 'human.' One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one—homo sapiens. What happened to the others? And what may happen to us?"
+        },
+        { 
+          title: "Educated", 
+          author: "Tara Westover", 
+          cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop",
+          genres: ["Non-Fiction", "Memoir", "Biography"],
+          description: "Tara Westover was seventeen the first time she set foot in a classroom. Born to survivalists in the mountains of Idaho, she prepared for the end of the world by stockpiling home-canned peaches and sleeping with her 'head-for-the-hills bag.' In the summer she stewed herbs for her mother, a midwife and healer, and in the winter she salvaged in her father's junkyard. Her father forbade hospitals, so Tara never saw a doctor or nurse."
+        },
+        { 
+          title: "Atomic Habits", 
+          author: "James Clear", 
+          cover: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=300&h=450&fit=crop",
+          genres: ["Non-Fiction", "Self-Help", "Psychology"],
+          description: "No matter your goals, Atomic Habits offers a proven framework for improving--every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones, and master the tiny behaviors that lead to remarkable results. If you're having trouble changing your habits, the problem isn't you. The problem is your system."
+        },
+        { 
+          title: "Becoming", 
+          author: "Michelle Obama", 
+          cover: "https://images.unsplash.com/photo-1506880135364-e28660dc35fa?w=300&h=450&fit=crop",
+          genres: ["Non-Fiction", "Memoir", "Biography"],
+          description: "In her memoir, a work of deep reflection and mesmerizing storytelling, Michelle Obama invites readers into her world, chronicling the experiences that have shaped her—from her childhood on the South Side of Chicago to her years as an executive balancing the demands of motherhood and work, to her time spent at the world's most famous address. With unerring honesty and lively wit, she describes her triumphs and her disappointments, both public and private."
+        },
+        { 
+          title: "The Immortal Life of Henrietta Lacks", 
+          author: "Rebecca Skloot", 
+          cover: "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=300&h=450&fit=crop",
+          genres: ["Non-Fiction", "Science", "Biography"],
+          description: "Her name was Henrietta Lacks, but scientists know her as HeLa. She was a poor Southern tobacco farmer who worked the same land as her slave ancestors, yet her cells—taken without her knowledge—became one of the most important tools in medicine. The first 'immortal' human cells grown in culture, they are still alive today, though she has been dead for more than sixty years."
+        },
+        { 
+          title: "Thinking, Fast and Slow", 
+          author: "Daniel Kahneman", 
+          cover: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=300&h=450&fit=crop",
+          genres: ["Non-Fiction", "Psychology", "Science"],
+          description: "In this bestselling book, Kahneman takes us on a groundbreaking tour of the mind and explains the two systems that drive the way we think. System 1 is fast, intuitive, and emotional; System 2 is slower, more deliberative, and more logical. Kahneman exposes the extraordinary capabilities—and also the faults and biases—of fast thinking, and reveals the pervasive influence of intuitive impressions on our thoughts and behavior."
+        }
+      ],
+      literary: [
+        { 
+          title: "To Kill a Mockingbird", 
+          author: "Harper Lee", 
+          cover: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&h=450&fit=crop",
+          genres: ["Literary Fiction", "Classic", "Coming of Age"],
+          description: "The unforgettable novel of a childhood in a sleepy Southern town and the crisis of conscience that rocked it. 'To Kill A Mockingbird' became both an instant bestseller and a critical success when it was first published in 1960. It went on to win the Pulitzer Prize in 1961 and was later made into an Academy Award-winning film, also a classic. Compassionate, dramatic, and deeply moving, it has become a beloved and enduring story of growing up in the South."
+        },
+        { 
+          title: "The Great Gatsby", 
+          author: "F. Scott Fitzgerald", 
+          cover: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&h=450&fit=crop",
+          genres: ["Literary Fiction", "Classic", "Historical"],
+          description: "The Great Gatsby, F. Scott Fitzgerald's third book, stands as the supreme achievement of his career. This exemplary novel of the Jazz Age has been acclaimed by generations of readers. The story is of the fabulously wealthy Jay Gatsby and his new love for the beautiful Daisy Buchanan, of lavish parties on Long Island at a time when The New York Times noted 'gin was the national drink and sex the national obsession.'"
+        },
+        { 
+          title: "1984", 
+          author: "George Orwell", 
+          cover: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=300&h=450&fit=crop",
+          genres: ["Literary Fiction", "Dystopian", "Classic"],
+          description: "Among the seminal texts of the 20th century, Nineteen Eighty-Four is a rare work that grows more haunting as its futuristic purgatory becomes more real. Published in 1949, the book offers political satirist George Orwell's nightmarish vision of a totalitarian, bureaucratic world and one poor stiff's attempt to find individuality. The brilliance of the novel is Orwell's prescience of modern life—the ubiquity of television, the distortion of the language—and his ability to construct such a thorough version of hell."
+        },
+        { 
+          title: "One Hundred Years of Solitude", 
+          author: "Gabriel García Márquez", 
+          cover: "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=300&h=450&fit=crop",
+          genres: ["Literary Fiction", "Magical Realism", "Classic"],
+          description: "The brilliant, bestselling, landmark novel that tells the story of the Buendia family, and chronicles the irreconcilable conflict between the desire for solitude and the need for love—in rich, imaginative prose that has come to define an entire genre known as 'magical realism.' One Hundred Years of Solitude is one of the most beloved works by Nobel Prize winner Gabriel García Márquez."
+        },
+        { 
+          title: "The Catcher in the Rye", 
+          author: "J.D. Salinger", 
+          cover: "https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=300&h=450&fit=crop",
+          genres: ["Literary Fiction", "Coming of Age", "Classic"],
+          description: "Since his debut in 1951 as The Catcher in the Rye, Holden Caulfield has been synonymous with 'cynical adolescent.' Holden narrates the story of a couple of days in his sixteen-year-old life, just after he's been expelled from prep school. A strange, unique voice, a distinct point of view, a classic American teenager at once tough and vulnerable."
+        },
+        { 
+          title: "Beloved", 
+          author: "Toni Morrison", 
+          cover: "https://images.unsplash.com/photo-1476275466078-4007374efbbe?w=300&h=450&fit=crop",
+          genres: ["Literary Fiction", "Historical", "Classic"],
+          description: "Staring unflinchingly into the abyss of slavery, this spellbinding novel transforms history into a story as powerful as Exodus and as intimate as a lullaby. Sethe, its protagonist, was born a slave and escaped to Ohio, but eighteen years later she is still not free. She has too many memories of Sweet Home, the beautiful farm where so many hideous things happened."
+        }
+      ],
+      contemporary: [
+        { 
+          title: "Where the Crawdads Sing", 
+          author: "Delia Owens", 
+          cover: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=300&h=450&fit=crop",
+          genres: ["Contemporary", "Mystery", "Romance"],
+          description: "For years, rumors of the 'Marsh Girl' have haunted Barkley Cove, a quiet town on the North Carolina coast. So in late 1969, when handsome Chase Andrews is found dead, the locals immediately suspect Kya Clark, the so-called Marsh Girl. But Kya is not what they say. Sensitive and intelligent, she has survived for years alone in the marsh that she calls home, finding friends in the gulls and lessons in the sand."
+        },
+        { 
+          title: "Little Fires Everywhere", 
+          author: "Celeste Ng", 
+          cover: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=300&h=450&fit=crop",
+          genres: ["Contemporary", "Family", "Drama"],
+          description: "In Shaker Heights, a placid, progressive suburb of Cleveland, everything is planned—from the layout of the winding roads, to the colors of the houses, to the successful lives its residents will go on to lead. And no one embodies this spirit more than Elena Richardson, whose guiding principle is playing by the rules. Enter Mia Warren—an enigmatic artist and single mother—who arrives in this bubble with her teenage daughter Pearl, and rents a house from the Richardsons."
+        },
+        { 
+          title: "The Midnight Library", 
+          author: "Matt Haig", 
+          cover: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=450&fit=crop",
+          genres: ["Contemporary", "Fantasy", "Philosophical"],
+          description: "Somewhere out beyond the edge of the universe there is a library that contains an infinite number of books, each one the story of another reality. One tells the story of your life as it is, along with another book for the other life you could have lived if you had made a different choice at any point in your life. While we all wonder how our lives might have been, what if you had the chance to go to the library and see for yourself?"
+        },
+        { 
+          title: "Normal People", 
+          author: "Sally Rooney", 
+          cover: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=300&h=450&fit=crop",
+          genres: ["Contemporary", "Romance", "Literary"],
+          description: "At school Connell and Marianne pretend not to know each other. He's popular and well-adjusted, star of the school soccer team while she is lonely, proud, and intensely private. But when Connell comes to pick his mother up from her housekeeping job at Marianne's house, a strange and indelible connection grows between the two teenagers—one they are determined to conceal."
+        },
+        { 
+          title: "The Seven Husbands of Evelyn Hugo", 
+          author: "Taylor Jenkins Reid", 
+          cover: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=450&fit=crop",
+          genres: ["Contemporary", "Historical Fiction", "LGBTQ+"],
+          description: "Aging and reclusive Hollywood movie icon Evelyn Hugo is finally ready to tell the truth about her glamorous and scandalous life. But when she chooses unknown magazine reporter Monique Grant for the job, no one is more astounded than Monique herself. Why her? Why now? Monique is not exactly on top of the world. Her husband has left her, and her professional life is going nowhere."
+        },
+        { 
+          title: "Eleanor Oliphant Is Completely Fine", 
+          author: "Gail Honeyman", 
+          cover: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=300&h=450&fit=crop",
+          genres: ["Contemporary", "Literary", "Drama"],
+          description: "Eleanor Oliphant has learned how to survive—but not how to live. Eleanor Oliphant leads a simple life. She wears the same clothes to work every day, eats the same meal deal for lunch every day, and buys the same two bottles of vodka to drink every weekend. Eleanor Oliphant is happy. Nothing is missing from her carefully timetabled life. Except, perhaps, a friend. And everything changes when she meets Raymond."
+        }
+      ],
+      adventure: [
+        { 
+          title: "The Alchemist", 
+          author: "Paulo Coelho", 
+          cover: "https://images.unsplash.com/photo-1476357471311-43c0db9fb2b4?w=300&h=450&fit=crop",
+          genres: ["Adventure", "Philosophical", "Inspirational"],
+          description: "Paulo Coelho's masterpiece tells the mystical story of Santiago, an Andalusian shepherd boy who yearns to travel in search of a worldly treasure. His quest will lead him to riches far different—and far more satisfying—than he ever imagined. Santiago's journey teaches us about the essential wisdom of listening to our hearts, of recognizing opportunity and learning to read the omens strewn along life's path, and, most importantly, to follow our dreams."
+        },
+        { 
+          title: "Into the Wild", 
+          author: "Jon Krakauer", 
+          cover: "https://images.unsplash.com/photo-1519558260268-cde7e03a0152?w=300&h=450&fit=crop",
+          genres: ["Adventure", "Non-Fiction", "Biography"],
+          description: "In April 1992 a young man from a well-to-do family hitchhiked to Alaska and walked alone into the wilderness north of Mt. McKinley. His name was Christopher Johnson McCandless. He had given $25,000 in savings to charity, abandoned his car and most of his possessions, burned all the cash in his wallet, and invented a new life for himself. Four months later, his decomposed body was found by a moose hunter."
+        },
+        { 
+          title: "Life of Pi", 
+          author: "Yann Martel", 
+          cover: "https://images.unsplash.com/photo-1509266272358-7701da638078?w=300&h=450&fit=crop",
+          genres: ["Adventure", "Survival", "Philosophical"],
+          description: "The son of a zookeeper, Pi Patel has an encyclopedic knowledge of animal behavior and a fervent love of stories. When Pi is sixteen, his family emigrates from India to North America aboard a Japanese cargo ship, along with their zoo animals bound for new homes. The ship sinks. Pi finds himself alone in a lifeboat, his only companions a hyena, an orangutan, a wounded zebra, and Richard Parker, a 450-pound Bengal tiger."
+        },
+        { 
+          title: "Wild", 
+          author: "Cheryl Strayed", 
+          cover: "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=300&h=450&fit=crop",
+          genres: ["Adventure", "Memoir", "Inspirational"],
+          description: "At twenty-two, Cheryl Strayed thought she had lost everything. In the wake of her mother's death, her family scattered and her own marriage was soon destroyed. Four years later, with nothing more to lose, she made the most impulsive decision of her life. With no experience or training, driven only by blind will, she would hike more than a thousand miles of the Pacific Crest Trail from the Mojave Desert through California and Oregon to Washington State—and she would do it alone."
+        },
+        { 
+          title: "Treasure Island", 
+          author: "Robert Louis Stevenson", 
+          cover: "https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=300&h=450&fit=crop",
+          genres: ["Adventure", "Classic", "Pirates"],
+          description: "Traditionally considered a coming-of-age story, Treasure Island is an adventure tale known for its atmosphere, characters and action, and also as a wry commentary on the ambiguity of morality—as seen in Long John Silver—unusual for children's literature. It is one of the most frequently dramatized of all novels. The influence of Treasure Island on popular perceptions of pirates is enormous, including treasure maps marked with an 'X', schooners, the Black Spot, tropical islands, and one-legged seamen."
+        },
+        { 
+          title: "The Call of the Wild", 
+          author: "Jack London", 
+          cover: "https://images.unsplash.com/photo-1506880135364-e28660dc35fa?w=300&h=450&fit=crop",
+          genres: ["Adventure", "Classic", "Nature"],
+          description: "The Call of the Wild is a short adventure novel by Jack London. The central character of the novel is a dog named Buck. The story opens at a ranch in Santa Clara Valley, California, when Buck is stolen from his home and sold into service as a sled dog in Alaska. He becomes progressively feral in the harsh environment, where he is forced to fight to survive and dominate other dogs. By the end, he sheds the veneer of civilization, and relies on primordial instinct and learned experience to emerge as a leader in the wild."
+        }
+      ],
+      ya: [
+        { 
+          title: "The Hunger Games", 
+          author: "Suzanne Collins", 
+          cover: "https://images.unsplash.com/photo-1577741314755-048d8525d31e?w=300&h=450&fit=crop",
+          genres: ["Young Adult", "Dystopian", "Adventure"],
+          description: "In the ruins of a place once known as North America lies the nation of Panem, a shining Capitol surrounded by twelve outlying districts. The Capitol is harsh and cruel and keeps the districts in line by forcing them all to send one boy and one girl between the ages of twelve and eighteen to participate in the annual Hunger Games, a fight to the death on live TV. Sixteen-year-old Katniss Everdeen regards it as a death sentence when she steps forward to take her sister's place in the Games."
+        },
+        { 
+          title: "Divergent", 
+          author: "Veronica Roth", 
+          cover: "https://images.unsplash.com/photo-1513001900722-370f803f498d?w=300&h=450&fit=crop",
+          genres: ["Young Adult", "Dystopian", "Romance"],
+          description: "In Beatrice Prior's dystopian Chicago world, society is divided into five factions, each dedicated to the cultivation of a particular virtue—Candor (the honest), Abnegation (the selfless), Dauntless (the brave), Amity (the peaceful), and Erudite (the intelligent). On an appointed day of every year, all sixteen-year-olds must select the faction to which they will devote the rest of their lives. For Beatrice, the decision is between staying with her family and being who she really is—she can't have both."
+        },
+        { 
+          title: "The Maze Runner", 
+          author: "James Dashner", 
+          cover: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=300&h=450&fit=crop",
+          genres: ["Young Adult", "Dystopian", "Science Fiction"],
+          description: "If you ain't scared, you ain't human. When Thomas wakes up in the lift, the only thing he can remember is his name. He's surrounded by strangers—boys whose memories are also gone. Nice to meet ya, shank. Welcome to the Glade. Outside the towering stone walls that surround the Glade is a limitless, ever-changing maze. It's the only way out—and no one's ever made it through alive."
+        },
+        { 
+          title: "The Perks of Being a Wallflower", 
+          author: "Stephen Chbosky", 
+          cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop",
+          genres: ["Young Adult", "Coming of Age", "Contemporary"],
+          description: "Charlie is a freshman. And while he's not the biggest geek in the school, he is by no means popular. Shy, introspective, intelligent beyond his years yet socially awkward, he is a wallflower, caught between trying to live his life and trying to run from it. Charlie is attempting to navigate his way through uncharted territory: the world of first dates and mix tapes, family dramas and new friends; the world of sex, drugs, and The Rocky Horror Picture Show."
+        },
+        { 
+          title: "Six of Crows", 
+          author: "Leigh Bardugo", 
+          cover: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=300&h=450&fit=crop",
+          genres: ["Young Adult", "Fantasy", "Heist"],
+          description: "Ketterdam: a bustling hub of international trade where anything can be had for the right price—and no one knows that better than criminal prodigy Kaz Brekker. Kaz is offered a chance at a deadly heist that could make him rich beyond his wildest dreams. But he can't pull it off alone. A convict with a thirst for revenge, a sharpshooter who can't walk away from a wager, a runaway with a privileged past, a spy known as the Wraith, a Heartrender using her magic to survive the slums, and a thief with a gift for unlikely escapes."
+        },
+        { 
+          title: "The Hate U Give", 
+          author: "Angie Thomas", 
+          cover: "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=300&h=450&fit=crop",
+          genres: ["Young Adult", "Contemporary", "Social Issues"],
+          description: "Sixteen-year-old Starr Carter moves between two worlds: the poor neighborhood where she lives and the fancy suburban prep school she attends. The uneasy balance between these worlds is shattered when Starr witnesses the fatal shooting of her childhood best friend Khalil at the hands of a police officer. Khalil was unarmed. Soon afterward, his death is a national headline."
+        }
+      ],
+      classics: [
+        { 
+          title: "Jane Eyre", 
+          author: "Charlotte Brontë", 
+          cover: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=300&h=450&fit=crop",
+          genres: ["Classic", "Romance", "Gothic"],
+          description: "Orphaned as a child, Jane has felt an outcast her whole young life. Her courage is tested once again when she arrives at Thornfield Hall, where she has been hired by the brooding, proud Edward Rochester to care for his ward Adèle. Jane finds herself drawn to his troubled yet kind spirit. She falls in love. Hard. But there is a terrifying secret inside the gloomy, forbidding Thornfield Hall. Is Rochester hiding from Jane? Will Jane be left heartbroken and exiled once again?"
+        },
+        { 
+          title: "Moby-Dick", 
+          author: "Herman Melville", 
+          cover: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&h=450&fit=crop",
+          genres: ["Classic", "Adventure", "Literary"],
+          description: "First published in 1851, Melville's masterpiece is, in Elizabeth Hardwick's words, 'the greatest novel in American literature.' The saga of Captain Ahab and his monomaniacal pursuit of the white whale remains a peerless adventure story but one full of mythic grandeur, poetic majesty, and symbolic power. Filtered through the consciousness of the novel's narrator, Ishmael, Moby-Dick draws us into a universe full of fascinating characters and stories."
+        },
+        { 
+          title: "Wuthering Heights", 
+          author: "Emily Brontë", 
+          cover: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&h=450&fit=crop",
+          genres: ["Classic", "Romance", "Gothic"],
+          description: "Wuthering Heights is Emily Brontë's only novel. Written between October 1845 and June 1846, it remained unpublished until July 1847. The novel's innovative structure somewhat puzzled critics. Wuthering Heights's violence and passion led the Victorian public and many early reviewers to think that it had been written by a man. According to Juliet Gardiner, 'the vivid sexual passion and power of its language and imagery impressed, bewildered and appalled reviewers.'"
+        },
+        { 
+          title: "Great Expectations", 
+          author: "Charles Dickens", 
+          cover: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=300&h=450&fit=crop",
+          genres: ["Classic", "Coming of Age", "Historical"],
+          description: "In what may be Dickens's best novel, humble, orphaned Pip is apprenticed to the dirty work of the forge but dares to dream of becoming a gentleman—and one day, under sudden and enigmatic circumstances, he finds himself in possession of 'great expectations.' In this gripping tale of crime and guilt, revenge and reward, the compelling characters include Magwitch, the fearful and fearsome convict; Estella, whose beauty is excelled only by her haughtiness; and the embittered Miss Havisham, an eccentric jilted bride."
+        },
+        { 
+          title: "The Picture of Dorian Gray", 
+          author: "Oscar Wilde", 
+          cover: "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=300&h=450&fit=crop",
+          genres: ["Classic", "Gothic", "Philosophical"],
+          description: "Written in his distinctively dazzling manner, Oscar Wilde's story of a fashionable young man who sells his soul for eternal youth and beauty is the author's most popular work. The tale of Dorian Gray's moral disintegration caused a scandal when it first appeared in 1890, but though Wilde was attacked for the novel's corrupting influence, he responded that there is, in fact, 'a terrible moral in Dorian Gray.'"
+        },
+        { 
+          title: "The Count of Monte Cristo", 
+          author: "Alexandre Dumas", 
+          cover: "https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=300&h=450&fit=crop",
+          genres: ["Classic", "Adventure", "Historical"],
+          description: "Thrown in prison for a crime he has not committed, Edmond Dantès is confined to the grim fortress of If. There he learns of a great hoard of treasure hidden on the Isle of Monte Cristo and he becomes determined not only to escape, but also to unearth the treasure and use it to plot the destruction of the three men responsible for his incarceration. Dumas' epic tale of suffering and retribution, inspired by a real-life case of wrongful imprisonment, was a huge popular success when it was first serialized in the 1840s."
+        }
+      ]
+    };
+
+    const genreTitles = {
+      mystery: "Mystery & Thriller",
+      scifi: "Science Fiction",
+      fantasy: "Fantasy",
+      romance: "Romance",
+      historical: "Historical Fiction",
+      horror: "Horror",
+      nonfiction: "Non-Fiction",
+      literary: "Literary Fiction",
+      contemporary: "Family & Contemporary",
+      adventure: "Adventure & Travel",
+      ya: "Young Adult",
+      classics: "Classic Literature"
+    };
+
+    async function showBooks(genre) {
+      const booksContainer = document.getElementById('booksContainer');
+      const booksGrid = document.getElementById('booksGrid');
+      const genreTitle = document.getElementById('genreTitle');
+      
+      // Update title
+      genreTitle.textContent = genreTitles[genre] + " Books";
+      
+      // Clear previous books and show loading
+      booksGrid.innerHTML = '<p style="text-align: center; padding: 20px;">Loading books...</p>';
+      
+      try {
+        // Fetch books from API
+        const response = await fetch(`${API_URL}/books`);
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          const allBooks = data.data.books;
+          
+          // Filter books by genre (check if genres JSON contains the genre)
+          const genreMap = {
+            'mystery': 'Mystery',
+            'scifi': 'Science Fiction',
+            'fantasy': 'Fantasy',
+            'romance': 'Romance',
+            'historical': 'Historical',
+            'horror': 'Horror',
+            'nonfiction': 'Non-Fiction',
+            'literary': 'Literary',
+            'contemporary': 'Contemporary',
+            'adventure': 'Adventure',
+            'ya': 'Young Adult',
+            'classics': 'Classic'
+          };
+          
+          const targetGenre = genreMap[genre];
+          const books = allBooks.filter(book => {
+            if (!book.genres) return false;
+            const genres = typeof book.genres === 'string' ? JSON.parse(book.genres) : book.genres;
+            return genres.some(g => g.includes(targetGenre));
+          });
+          
+          // Clear loading message
+          booksGrid.innerHTML = '';
+          
+          // Add books
+          if (books.length === 0) {
+            booksGrid.innerHTML = '<p style="text-align: center; padding: 20px;">No books found in this genre.</p>';
+          } else {
+            books.forEach(book => {
+              const bookCard = document.createElement('div');
+              bookCard.className = 'book-card';
+              bookCard.innerHTML = `
+                <div class="book-cover">
+                  <img src="${book.cover_image}" alt="${book.title}" loading="lazy" />
+                </div>
+                <div class="book-title">${book.title}</div>
+                <div class="book-author">${book.author}</div>
+              `;
+              bookCard.onclick = () => openBookModal(book, genre);
+              booksGrid.appendChild(bookCard);
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching books:', error);
+        booksGrid.innerHTML = '<p style="text-align: center; padding: 20px; color: red;">Error loading books. Make sure backend is running.</p>';
+      }
+      
+      // Remove active class from all genre cards
+      document.querySelectorAll('.genre-card').forEach(card => {
+        card.classList.remove('active');
+      });
+      
+      // Add active class to clicked card
+      document.querySelector(`[data-genre="${genre}"]`).classList.add('active');
+      
+      // Show books container
+      booksContainer.classList.add('active');
+      
+      // Scroll to books container
+      setTimeout(() => {
+        booksContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    function closeBooks() {
+      const booksContainer = document.getElementById('booksContainer');
+      booksContainer.classList.remove('active');
+      
+      // Remove active class from all genre cards
+      document.querySelectorAll('.genre-card').forEach(card => {
+        card.classList.remove('active');
+      });
+    }
+
+    function performSearch() {
+      const searchInput = document.getElementById('searchInput');
+      const searchTerm = searchInput.value.trim().toLowerCase();
+      
+      if (!searchTerm) {
+        alert('Please enter a search term');
+        return;
+      }
+      
+      // Search through all books
+      let results = [];
+      Object.keys(bookDatabase).forEach(genre => {
+        bookDatabase[genre].forEach(book => {
+          if (book.title.toLowerCase().includes(searchTerm) || 
+              book.author.toLowerCase().includes(searchTerm)) {
+            results.push({ ...book, genre });
+          }
+        });
+      });
+      
+      // Check if searching for a genre
+      const genreMatch = Object.keys(genreTitles).find(key => 
+        genreTitles[key].toLowerCase().includes(searchTerm) || 
+        key.toLowerCase().includes(searchTerm)
+      );
+      
+      if (genreMatch) {
+        showBooks(genreMatch);
+        return;
+      }
+      
+      // Display search results
+      if (results.length > 0) {
+        const booksGrid = document.getElementById('booksGrid');
+        const genreTitle = document.getElementById('genreTitle');
+        const booksContainer = document.getElementById('booksContainer');
+        
+        genreTitle.textContent = `Search Results for "${searchTerm}" (${results.length})`;
+        booksGrid.innerHTML = '';
+        
+        results.forEach(book => {
+          const bookCard = document.createElement('div');
+          bookCard.className = 'book-card';
+          bookCard.innerHTML = `
+            <div class="book-cover">
+              <img src="${book.cover}" alt="${book.title}" loading="lazy" />
+            </div>
+            <div class="book-title">${book.title}</div>
+            <div class="book-author">${book.author}</div>
+          `;
+          bookCard.onclick = () => openBookModal(book, book.genre);
+          booksGrid.appendChild(bookCard);
+        });
+        
+        booksContainer.classList.add('active');
+        setTimeout(() => {
+          booksContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+      } else {
+        alert(`No results found for "${searchTerm}"`);
+      }
+      
+      searchInput.value = '';
+    }
+
+    // Modal functions
+    let currentBook = null;
+
+    function openBookModal(book, genre) {
+      currentBook = book;
+      const modal = document.getElementById('bookModal');
+      const modalCover = document.getElementById('modalCover');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalAuthor = document.getElementById('modalAuthor');
+      const modalGenres = document.getElementById('modalGenres');
+      const modalDescription = document.getElementById('modalDescription');
+
+      // Populate modal with book data (handle both API and hardcoded data)
+      modalCover.src = book.cover_image || book.cover;
+      modalCover.alt = book.title;
+      modalTitle.textContent = book.title;
+      modalAuthor.textContent = `by ${book.author}`;
+      modalDescription.textContent = book.description;
+
+      // Add genre tags
+      modalGenres.innerHTML = '';
+      const genres = typeof book.genres === 'string' ? JSON.parse(book.genres) : book.genres;
+      genres.forEach(genreTag => {
+        const tag = document.createElement('span');
+        tag.className = 'genre-tag';
+        tag.textContent = genreTag;
+        modalGenres.appendChild(tag);
+      });
+
+      // Show modal
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    function closeModal(event) {
+      // Close if clicking overlay or close button
+      if (!event || event.target.id === 'bookModal' || event.type === 'click') {
+        const modal = document.getElementById('bookModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = ''; // Restore scrolling
+        currentBook = null;
+      }
+    }
+
+    async function borrowBook() {
+      if (!currentBook) return;
+      
+      if (!authToken) {
+        alert('Please login to borrow books');
+        closeModal();
+        openAuthModal('login');
+        return;
+      }
+      
+      try {
+        const bookId = currentBook.id || currentBook._id;
+        console.log('Trying to borrow book:', currentBook.title, 'ID:', bookId);
+        
+        if (!bookId) {
+          alert('Error: Book ID is missing. Please refresh the page and try again.');
+          return;
+        }
+        
+        const response = await fetch(`${API_URL}/borrows/borrow/${bookId}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          alert(`📚 ${data.message}\n\nChat with the AI Librarian for more recommendations!`);
+          closeModal();
+        } else {
+          alert(`❌ ${data.message}`);
+        }
+      } catch (error) {
+        console.error('Borrow error:', error);
+        alert('Error borrowing book. Please make sure the backend is running.');
+      }
+    }
+
+    async function reserveBook() {
+      if (!currentBook) return;
+      
+      if (!authToken) {
+        alert('Please login to reserve books');
+        closeModal();
+        openAuthModal('login');
+        return;
+      }
+      
+      try {
+        const bookId = currentBook.id || currentBook._id;
+        const response = await fetch(`${API_URL}/borrows/reserve/${bookId}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          alert(`✅ ${data.message}\n\nChat with the AI Librarian for similar recommendations while you wait!`);
+          closeModal();
+        } else {
+          alert(`❌ ${data.message}`);
+        }
+      } catch (error) {
+        console.error('Reserve error:', error);
+        alert('Error reserving book. Please make sure the backend is running.');
+      }
+    }
+
+    function getReturnDate() {
+      const date = new Date();
+      date.setDate(date.getDate() + 14); // 14 days from now
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    // Allow Enter key to search
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          performSearch();
+        }
+      });
+
+      // Close modal with Escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeModal();
+        }
+      });
+    });
+  </script>
+
+  <!-- Flowise embed -->
+  <script type="module">
+    import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
+
+    Chatbot.init({
+      chatflowid: "456ce1da-8b88-4182-8e29-24f38e3bf5b7",   // your chatflow
+      apiHost: "https://flowise-c5l3.onrender.com",          // your Flowise URL
+
+      // OPTIONAL nice tweaks:
+      chatflowConfig: {
+        // you can pass variables here if your flow uses them
+      },
+      theme: {
+        button: {
+          backgroundColor: "#111",  // Minimalist black
+          right: 20,
+          bottom: 20,
+          size: "medium",
+          iconColor: "#fff",  // Clean white
+          customIconSrc: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3Cpath d='M15 12h6v2h-6zm0-4h6v2h-6zm0 8h6v2h-6z'/%3E%3C/svg%3E",
+        },
+        chatWindow: {
+          title: "📖 Readers Haven Librarian",
+          subtitle: "Your literary guide & book curator",
+          welcomeMessage:
+            "Hi! I'm your personal librarian. Tell me your favorite genres, authors, or mood, and I'll help you find the perfect book to borrow or reserve.",
+          backgroundColor: "#fff",  // Clean white background
+          fontSize: 14,
+          poweredByTextColor: "#999",  // Subtle gray
+          userMessage: {
+            backgroundColor: "#111",  // Black for user messages
+            textColor: "#fff",
+          },
+          botMessage: {
+            backgroundColor: "#f5f5f5",  // Light gray for bot messages
+            textColor: "#333",
+          },
+        },
+      },
+    })
+  </script>
+</body>
+</html>
