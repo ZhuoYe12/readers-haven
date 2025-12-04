@@ -235,7 +235,7 @@ app.post('/api/borrows/borrow/:bookId', async (req, res) => {
     
     // Create borrow record
     await sequelize.query(
-      'INSERT INTO borrows (user_id, book_id, type, status, borrow_date, due_date) VALUES (?, ?, ?, ?, NOW(), ?)',
+      'INSERT INTO borrows (user_id, book_id, borrow_type, status, borrow_date, due_date) VALUES (?, ?, ?, ?, NOW(), ?)',
       { replacements: [userId, bookId, 'borrow', 'active', dueDate] }
     );
     
@@ -294,8 +294,8 @@ app.post('/api/borrows/reserve/:bookId', async (req, res) => {
     
     // Create reservation
     await sequelize.query(
-      'INSERT INTO borrows (user_id, book_id, type, status, borrow_date, due_date) VALUES (?, ?, ?, ?, NOW(), ?)',
-      { replacements: [userId, bookId, 'reservation', 'active', expiryDate] }
+      'INSERT INTO borrows (user_id, book_id, borrow_type, status, borrow_date, due_date) VALUES (?, ?, ?, ?, NOW(), ?)',
+      { replacements: [userId, bookId, 'reserve', 'active', expiryDate] }
     );
     
     res.status(201).json({
@@ -327,7 +327,7 @@ app.get('/api/borrows/my-borrows', async (req, res) => {
       `SELECT b.*, bk.title, bk.author, bk.cover_image 
        FROM borrows b 
        JOIN books bk ON b.book_id = bk.id 
-       WHERE b.user_id = ? AND b.type = 'borrow' AND b.status IN ('active', 'overdue')
+       WHERE b.user_id = ? AND b.borrow_type = 'borrow' AND b.status IN ('active', 'overdue')
        ORDER BY b.borrow_date DESC`,
       { replacements: [decoded.id] }
     );
@@ -366,7 +366,7 @@ app.get('/api/borrows/my-reservations', async (req, res) => {
       `SELECT b.*, bk.title, bk.author, bk.cover_image 
        FROM borrows b 
        JOIN books bk ON b.book_id = bk.id 
-       WHERE b.user_id = ? AND b.type = 'reservation' AND b.status = 'active'
+       WHERE b.user_id = ? AND b.borrow_type = 'reserve' AND b.status = 'active'
        ORDER BY b.borrow_date DESC`,
       { replacements: [decoded.id] }
     );
@@ -473,7 +473,7 @@ app.get('/api/borrows/history', async (req, res) => {
       `SELECT b.*, bk.title, bk.author, bk.cover_image 
        FROM borrows b 
        JOIN books bk ON b.book_id = bk.id 
-       WHERE b.user_id = ? AND b.type = 'borrow'
+       WHERE b.user_id = ? AND b.borrow_type = 'borrow'
        ORDER BY b.borrow_date DESC
        LIMIT 50`,
       { replacements: [decoded.id] }
